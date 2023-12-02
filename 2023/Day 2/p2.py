@@ -29,34 +29,44 @@ def parseGames(filePath):
             acc.append({"gameId": gameNum, "rounds": parsedRounds})
         return acc
 
-def gamePossible(game):
+def gamePower(game):
     """
-    >>> gamePossible({'gameId': 11, 'rounds': [[0, 0, 0]]})
-    11
-    >>> gamePossible({'gameId': 1, 'rounds': [[21, 0, 0]]})
+    >>> gamePower({'gameId': 11, 'rounds': [[0, 0, 0]]})
     0
-    >>> gamePossible({'gameId': 1, 'rounds': [[0, 21, 0]]})
-    0
-    >>> gamePossible({'gameId': 1, 'rounds': [[0, 0, 21]]})
-    0
-    >>> gamePossible({'gameId': 1, 'rounds': [[12, 13, 14]]})
-    1
+    >>> gamePower({'gameId': 1, 'rounds': [[4, 0, 3], [1, 2, 6], [0, 2, 0]]})
+    48
+    >>> gamePower({'gameId': 1, 'rounds': [[0, 2, 1], [1, 3, 4], [0, 1, 1]]})
+    12
+    >>> gamePower({'gameId': 1, 'rounds': [[20, 8, 6], [4, 13, 5], [1, 5, 0]]})
+    1560
+    >>> gamePower({'gameId': 1, 'rounds': [[3, 1, 6], [6, 3, 0], [14, 3, 15]]})
+    630
+    >>> gamePower({'gameId': 1, 'rounds': [[6, 3, 1], [1, 2, 2]]})
+    36
     """
+    maxes = [0, 0, 0]
+    result = 1
     for round in game["rounds"]:
-        if round[0] > redMax or round[1] > greenMax or round[2] > blueMax:
-            return 0
-    return game["gameId"]
+        if round[0] > maxes[0]:
+            maxes[0] = round[0]
+        if round[1] > maxes[1]:
+            maxes[1] = round[1]
+        if round[2] > maxes[2]:
+            maxes[2] = round[2]
+    for num in maxes:
+        result *= num
+    return result
     
 def solve(filePath):
     """
     >>> solve("sample1.txt")
-    8
+    2286
     """
     games = parseGames(filePath)
     total = 0
     for game in games:
-        total = total + gamePossible(game)
+        total = total + gamePower(game)
     return total
 
 result = solve("input.txt")
-print("Sum of game ids is:", result)
+print("Sum of game power is:", result)
